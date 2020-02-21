@@ -1,19 +1,25 @@
 import json
 
+import pytest
 from assertpy import assert_that
-from mock import patch
 
 from starlette.testclient import TestClient
 
-from app.main import app as trvmp_api
+from app.main import app
+from app.database import engine, Base
+
+client = TestClient(app)
 
 
-client = TestClient(trvmp_api)
+@pytest.fixture(autouse=True)
+def resource():
+    Base.metadata.create_all(engine)
+    yield
+    Base.metadata.drop_all(engine)
 
 
 class TestUsersEnpoint(object):
 
-    @patch('app.database.DATABASE_URL', 'sqlite:///asdf.db')
     def test_user_creation(self):
         user_data_input = {
             'email': 'a_email',

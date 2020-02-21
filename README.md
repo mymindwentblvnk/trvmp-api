@@ -16,3 +16,6 @@ FIFA Dashboard based on FastAPI.
 
 ### PEP 8
 `flake8`
+
+### Tests
+`sh run-unit-tests.sh`
