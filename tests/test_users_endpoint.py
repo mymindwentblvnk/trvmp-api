@@ -5,11 +5,10 @@ from mock import patch
 
 from starlette.testclient import TestClient
 
-from app.main import app as trvmp
-from app import ß
+from app.main import app as trvmp_api
 
 
-client = TestClient(trvmp)
+client = TestClient(trvmp_api)
 
 
 class TestUsersEnpoint(object):
