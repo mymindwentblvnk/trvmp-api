@@ -24,4 +24,4 @@ FIFA Dashboard based on FastAPI.
 `flake8`
 
 ### Tests
-`sh run-unit-tests.sh`
+`sh run-local-tests.sh`
