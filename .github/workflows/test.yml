@@ -4,7 +4,10 @@ on: [push]
 
 jobs:
   build:
-    runs-on: python:3.7-slim
+    runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          python-version: [3.6, 3.7, 3.8]
     env:
         DATABASE_URL: postgresql://postgres:postgres@localhost/postgres
     services:
