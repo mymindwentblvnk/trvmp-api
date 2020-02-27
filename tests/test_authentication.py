@@ -1,12 +1,8 @@
-import json
-
 import pytest
-from assertpy import assert_that
-
 from starlette.testclient import TestClient
 
-from app.main import app
 from app.database import engine, Base
+from app.main import app
 
 client = TestClient(app)
 
