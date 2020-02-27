@@ -5,9 +5,9 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          python-version: [3.6, 3.7, 3.8]
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
     env:
         DATABASE_URL: postgresql://postgres:postgres@localhost/postgres
     services:
