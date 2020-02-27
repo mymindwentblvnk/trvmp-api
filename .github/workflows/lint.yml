@@ -1,4 +1,4 @@
-name: Linting
+name: PEP 8
 
 on: [push]
 
