@@ -14,5 +14,4 @@ sleep ${PG_SPINUP_TIME}  # Needed to start Postgres entirely
 pytest tests
 docker stop ${PG_CONTAINTER}
 docker rm ${PG_CONTAINTER}
-deactivate
 unset DATABASE_URL
