@@ -3,14 +3,19 @@ from pydantic import BaseModel
 
 class UserCreate(BaseModel):
     email: str
+    username: str
     password: str
 
 
 class User(BaseModel):
     user_id: int
+    username: str
     email: str
-    name: str = None
-    is_active: bool
+    disabled: bool
 
     class Config:
         orm_mode = True
+
+
+class UserInDB(User):
+    hashed_password: str

@@ -1,0 +1,24 @@
+name: Test
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: python:3.7-slim
+    env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost/postgres
+    services:
+      postgres:
+        image: postgres:11.6-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Install required apt packages
+        run: sudo pip install -r requirements.txt
+      - name: Run tests
+        run: sh run-unit-tests.sh
+
