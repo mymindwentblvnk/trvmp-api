@@ -18,7 +18,7 @@ class TestTokenEndpoint(TestClientRequestsMixin):
 
     client = TestClient(app)
 
-    def create_user(self, username, password, email):
+    def do_create_user(self, username, password, email):
         user_data = {
             'username': username,
             'password': password,
@@ -32,7 +32,7 @@ class TestTokenEndpoint(TestClientRequestsMixin):
         email = 'a_email@trvmp.io'
 
         # Create user first
-        self.create_user(username=username, password=password, email=email)
+        self.do_create_user(username=username, password=password, email=email)
 
         # Then try to log in
         response = self.post(url="/token", data={'username': username, 'password': password})
