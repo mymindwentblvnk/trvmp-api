@@ -1,7 +1,7 @@
 # trvmp-api
 
-[![Actions Status](https://github.com/mymindwentblvnk/trvmp-api/workflows/Tests/badge.svg)](https://github.com/mymindwentblvnk/trvmp-api/actions)
-[![Actions Status](https://github.com/mymindwentblvnk/trvmp-api/workflows/PEP%208/badge.svg)](https://github.com/mymindwentblvnk/trvmp-api/actions)
+[![Actions Status](https://github.com/mymindwentblvnk/trvmp-api/workflows/Tests/badge.svg?branch=develop)](https://github.com/mymindwentblvnk/trvmp-api/actions)
+[![Actions Status](https://github.com/mymindwentblvnk/trvmp-api/workflows/PEP%208/badge.svg?branch=develop)](https://github.com/mymindwentblvnk/trvmp-api/actions)
 
 FIFA Dashboard based on FastAPI.
 
