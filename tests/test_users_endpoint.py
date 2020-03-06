@@ -7,6 +7,7 @@ from starlette.testclient import TestClient
 
 from app.main import app
 from app.database import engine, Base
+from tests.fixtures import TestClientRequestsMixin
 
 
 @pytest.fixture(autouse=True)
@@ -16,7 +17,8 @@ def resource():
     Base.metadata.drop_all(engine)
 
 
-class TestUsersEndpoint(object):
+class TestUsersEndpoint(TestClientRequestsMixin):
+
     client = TestClient(app)
 
     def test_user_creation(self):
@@ -25,7 +27,7 @@ class TestUsersEndpoint(object):
             'username': 'a_username',
             'password': 'a_password'
         }
-        response = self.client.post('/users', json=user_data_input)
+        response = self.post(url='/users', json=user_data_input)
 
         user_data_actual = json.loads(response.text)
         user_data_expected = {
@@ -43,7 +45,7 @@ class TestUsersEndpoint(object):
             'username': 'a_username',
             'password': 'a_password'
         }
-        response = self.client.post('/users', json=user_data_input)
+        response = self.post(url='/users', json=user_data_input)
         assert_that(response.status_code).is_equal_to(200)
 
         same_user_data_input = {
@@ -51,5 +53,5 @@ class TestUsersEndpoint(object):
             'username': 'a_username',
             'password': 'a_password'
         }
-        response = self.client.post('/users', json=same_user_data_input)
+        response = self.post(url='/users', json=same_user_data_input)
         assert_that(response.status_code).is_equal_to(400)

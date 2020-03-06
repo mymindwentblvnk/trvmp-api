@@ -1,53 +1,34 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 
+from app.authentication import Token, authenticate_user, create_access_token
+from app.database import get_db_session
 from app.database.crud import get_user_by_email, create_user
-from app.database import SessionLocal
-from app.schemas import User, UserCreate, UserInDB
-
-from starlette.status import HTTP_400_BAD_REQUEST
-
-from app.authentication import fake_hash_password, fake_users_db, get_current_active_user
-
+from app.schemas import User, UserCreate
 
 app = FastAPI()
 
 
-def get_db() -> Session:
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
-
-
 @app.post("/users", response_model=User)
-def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(user: UserCreate,
+                db: Session = Depends(get_db_session)):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="E-Mail already registered")
     return create_user(db=db, user=user)
 
 
-@app.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user_dict = fake_users_db.get(form_data.username)
-    if not user_dict:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
-                            detail="Incorrect username or password")
-    user = UserInDB(**user_dict)
-    hashed_password = fake_hash_password(form_data.password)
-    if not hashed_password == user.hashed_password:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
-                            detail="Incorrect username or password")
-
-    return {
-        'access_token': 'a_token',
-        'token_type': 'bearer'
-    }
-
-
-@app.get("/users/me")
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
+@app.post("/token", response_model=Token)
+async def login(db: Session = Depends(get_db_session),
+                form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(db,
+                             username=form_data.username,
+                             password=form_data.password)
+    if not user:
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED,
+                            detail="Incorrect username or password",
+                            headers={"WWW-Authenticate": "Bearer"})
+    access_token = create_access_token(data={'sub': user.username})
+    return {'access_token': access_token, 'token_type': 'bearer'}
