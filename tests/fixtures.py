@@ -7,7 +7,7 @@ class TestClientRequestsMixin(object):
         return self.client.post(**kwargs)
 
     def get(self, url, params=None, access_token=None):
-        kwargs = {'params': params, 'url': url }
+        kwargs = {'params': params, 'url': url}
         if access_token:
             kwargs['headers'] = {'Authorization': f'Bearer {access_token}'}
         return self.client.get(**kwargs)
