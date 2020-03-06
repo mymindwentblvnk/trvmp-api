@@ -12,8 +12,8 @@ app = FastAPI()
 
 
 @app.post("/users", response_model=User)
-def create_user(user: UserCreate,
-                db: Session = Depends(get_db_session)):
+def create_user_endpoint(user: UserCreate,
+                         db: Session = Depends(get_db_session)):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="E-Mail already registered")
@@ -21,8 +21,8 @@ def create_user(user: UserCreate,
 
 
 @app.post("/token", response_model=Token)
-async def login(db: Session = Depends(get_db_session),
-                form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_endpoint(db: Session = Depends(get_db_session),
+                         form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db,
                              username=form_data.username,
                              password=form_data.password)
