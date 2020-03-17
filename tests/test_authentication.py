@@ -1,5 +1,6 @@
 import pytest
 from assertpy import assert_that
+
 from starlette.testclient import TestClient
 
 from app.database import engine, Base
@@ -18,7 +19,7 @@ class TestTokenEndpoint(TestClientRequestsMixin):
 
     client = TestClient(app)
 
-    def do_create_user(self, username, password, email):
+    def create_user(self, username, password, email):
         user_data = {
             'username': username,
             'password': password,
@@ -29,10 +30,10 @@ class TestTokenEndpoint(TestClientRequestsMixin):
     def test_user_login_returns_200(self):
         username = 'the_username'
         password = 'the_password'
-        email = 'a_email@trvmp.io'
+        email = 'mail@trvmp.io'
 
         # Create user first
-        self.do_create_user(username=username, password=password, email=email)
+        _ = self.create_user(username=username, password=password, email=email)
 
         # Then try to log in
         response = self.post(url="/token", data={'username': username, 'password': password})
@@ -46,3 +47,8 @@ class TestTokenEndpoint(TestClientRequestsMixin):
         token_type = response.json()['token_type']
         assert_that(access_token).is_not_none()
         assert_that(token_type).is_equal_to('bearer')
+
+    def test_get_user_endpoint_works_only_if_authenticated(self):
+        # Then try to retrieve data without authorization
+        response = self.get(url='/users')
+        assert_that(response.status_code).is_equal_to(401)

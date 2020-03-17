@@ -9,8 +9,9 @@ from pydantic import BaseModel
 from starlette.status import HTTP_401_UNAUTHORIZED
 
 from app.schemas import User
-from app.database import get_db_session
+from app.database import get_db_session, SessionLocal
 from app.database.crud import get_user_by_username
+from app.database.models import UserModel
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -41,10 +42,14 @@ def verify_password(plain_password, hashed_password):
 def authenticate_user(db: Depends(get_db_session), username: str, password: str):
     user = get_user_by_username(db, username)
     if not user:
-        return False
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED,
+                            detail="Incorrect username or password",
+                            headers={"WWW-Authenticate": "Bearer"})
     if not verify_password(password, user.hashed_password):
-        return False
-    return user
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED,
+                            detail="Incorrect username or password",
+                            headers={"WWW-Authenticate": "Bearer"})
+    return create_access_token(data={'sub': user.username})
 
 
 def create_access_token(*, data: dict):
@@ -55,12 +60,11 @@ def create_access_token(*, data: dict):
     return encoded_jwt
 
 
-async def get_current_user(db: Depends(get_db_session), token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def get_current_user(db: SessionLocal = Depends(get_db_session),
+                     token: str = Depends(oauth2_scheme)) -> UserModel:
+    credentials_exception = HTTPException(status_code=HTTP_401_UNAUTHORIZED,
+                                          detail="Could not validate credentials",
+                                          headers={"WWW-Authenticate": "Bearer"})
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")

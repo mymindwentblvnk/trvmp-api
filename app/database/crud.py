@@ -1,3 +1,5 @@
+from typing import List
+
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
@@ -7,7 +9,7 @@ from app.schemas import UserCreate
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def get_password_hash(password):
+def get_password_hash(password) -> str:
     return pwd_context.hash(password)
 
 
@@ -23,7 +25,7 @@ def get_user_by_username(db: Session, username: str) -> UserModel:
     return db.query(UserModel).filter(UserModel.username == username).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[UserModel]:
     return db.query(UserModel).offset(skip).limit(limit).all()
 
 

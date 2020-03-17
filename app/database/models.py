@@ -5,7 +5,7 @@ from app.database import Base
 
 class UserModel(Base):
 
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True, index=True)
     username = Column(String, nullable=False)
